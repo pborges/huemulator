@@ -5,6 +5,7 @@ import (
 	"log"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
+	"strconv"
 )
 
 var setupTemplateText =
@@ -102,26 +103,32 @@ func (m *Router)lightsList(w http.ResponseWriter, r *http.Request, _ httprouter.
 	}
 }
 
+// this whole method needs to be reworked I think, it is not very good
 func (m *Router)lightState(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
 	req := make(map[string]bool)
 	json.NewDecoder(r.Body).Decode(&req)
 	lightStatus := m.lightsStatus.Lights[p.ByName("lightId")]
 	light := m.lightLookup[p.ByName("lightId")]
-	var state string
+
+	state := false
+	lightStatus.State.On = false
+	lightStatus.State.XY = nil // this seems to be voodoo, if it is nil the echo says it could not turn on/off the device, useful...
+	m.lightsStatus.Lights[lightStatus.UniqueId] = lightStatus
+
 	if req["on"] {
-		light.OnFunc(light)
-		lightStatus.State.On = true
-		lightStatus.State.XY = []float64{0.4255, 0.3998}
-		state = "on"
+		if state = light.OnFunc(light); state {
+			lightStatus.State.On = true
+			lightStatus.State.XY = []float64{0.4255, 0.3998}
+			state = true
+		}
 	}else {
-		light.OffFunc(light)
-		lightStatus.State.On = false
-		lightStatus.State.XY = []float64{0, 0}
-		state = "off"
+		if state = light.OffFunc(light); state {
+			lightStatus.State.XY = []float64{0.4255, 0.3998}
+		}
 	}
 	m.lightsStatus.Lights[lightStatus.UniqueId] = lightStatus
 
 	// this is very ugly...
-	w.Write([]byte("[{\"success\":{\"/lights/" + lightStatus.UniqueId + "/state/" + state + "\":true}}]"))
+	w.Write([]byte("[{\"success\":{\"/lights/" + lightStatus.UniqueId + "/state/on\":" + strconv.FormatBool(state) + "}}]"))
 }

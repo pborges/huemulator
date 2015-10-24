@@ -19,7 +19,7 @@ func (d *SimpleDAO) GetLights() (lights []huemulator.Light) {
 		},
 		OffFunc:func(l huemulator.Light) (ok bool) {
 			fmt.Println("Turn off", l.Name)
-			return true
+			return false
 		},
 	}
 	return

@@ -14,4 +14,4 @@ I wanted to remove alot of code that I felt was _voodoo_ magic.
 
 
 ### Example
-see ```habridge/habridge.go```
+see ```examples/habridge.go```

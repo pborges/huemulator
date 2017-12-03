@@ -1,4 +1,5 @@
 # HUEMULATOR
+# Please look at [https://github.com/pborges/huejack](https://github.com/pborges/huejack)
 ## A bare bones emulator library for the Phillips Hue bulb system
 
 For use primarily for attaching home automation features to the Amazon Echo (Alexa)
@@ -15,3 +16,4 @@ I wanted to remove alot of code that I felt was _voodoo_ magic.
 
 ### Example
 see ```examples/habridge.go```
+
